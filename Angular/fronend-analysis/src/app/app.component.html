@@ -1,0 +1,23 @@
+<div class="container">
+  <h1>{{ title }}</h1>
+  <label for="repoUrl">Git Repository URL: </label>
+  <input
+    id="repoUrl"
+    [(ngModel)]="repoUrl"
+    type="text"
+    placeholder="Enter repository URL"
+  />
+  <button (click)="analyze()">Analyze</button>
+
+  <div *ngIf="output" class="output-container">
+    <h2>Analysis Results:</h2>
+    <pre class="analysis-results">{{ output }}</pre>
+  </div>
+
+  <div *ngIf="!output">
+    <p>No analysis results yet. Please enter a repository URL and click 'Analyze'.</p>
+  </div>
+</div>
+
+
+<router-outlet />

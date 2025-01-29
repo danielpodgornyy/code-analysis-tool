@@ -1,3 +1,5 @@
+# The input is using command line only (not connected to Flask/Angular)
+
 import os
 import tempfile
 from git import Repo, exc
