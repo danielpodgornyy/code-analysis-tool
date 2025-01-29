@@ -1,7 +1,6 @@
-# The main backend file
-
 import os
 import tempfile
+import zipfile
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from git import Repo, exc
@@ -9,7 +8,7 @@ from criteria.line_length import LineLengthCriterion
 from config import CRITERIA
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:4200"])  # Allow requests from Angular app
+CORS(app, origins=["http://localhost:4200"])
 
 def list_files_from_directory(directory):
     """List all files in a directory, excluding hidden ones."""
@@ -37,32 +36,20 @@ def analyze_files(directory, file_list):
 
 @app.route("/run-analyzer", methods=["POST"])
 def run_analyzer():
+    """Handles both Git repo analysis and local file uploads."""
     try:
-        # Check if the body is JSON
         if request.is_json:
-            data = request.get_json()  # Parse the incoming JSON
-            repo_url_or_path = data.get("repo_url")  # Extract the repo_url field
+            data = request.get_json()
+            repo_url = data.get("repo_url")
 
-            if not repo_url_or_path:
-                return jsonify({"error": "No repository URL or local path provided"}), 400
+            if not repo_url:
+                return jsonify({"error": "No repository URL provided"}), 400
 
-            # If it's a local path, process directly
-            if os.path.isdir(repo_url_or_path):  # It's a local directory
-                directory = repo_url_or_path
-                file_list = list_files_from_directory(directory)
-                if not file_list:
-                    return jsonify({"error": "No files found in the directory."}), 400
-
-                analysis_results = analyze_files(directory, file_list)
-
-                return jsonify({"files": file_list, "analysis": analysis_results}), 200
-
-            # Otherwise, assume it's a URL and clone the repository
             with tempfile.TemporaryDirectory() as temp_dir:
-                print(f"Cloning repository from {repo_url_or_path} into {temp_dir}...")
+                print(f"Cloning repository from {repo_url} into {temp_dir}...")
 
                 try:
-                    repo = Repo.clone_from(repo_url_or_path, temp_dir)
+                    repo = Repo.clone_from(repo_url, temp_dir)
 
                     if repo.bare:
                         return jsonify({"error": "The repository is bare or invalid."}), 400
@@ -70,7 +57,6 @@ def run_analyzer():
                     repo.git.checkout()
                     directory = temp_dir
 
-                    # List files and analyze them inside the temporary directory scope
                     file_list = list_files_from_directory(directory)
                     if not file_list:
                         return jsonify({"error": "No files found in the repository."}), 400
@@ -82,8 +68,31 @@ def run_analyzer():
                 except exc.GitCommandError as e:
                     return jsonify({"error": f"Failed to clone repository: {e.stderr.strip()}"}), 500
 
+        elif 'file' in request.files:
+            uploaded_file = request.files['file']
+
+            if not uploaded_file.filename.endswith('.zip'):
+                return jsonify({"error": "Only .zip files are allowed"}), 400
+
+            with tempfile.TemporaryDirectory() as temp_dir:
+                zip_path = os.path.join(temp_dir, uploaded_file.filename)
+                uploaded_file.save(zip_path)
+
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(temp_dir)
+
+                directory = temp_dir
+                file_list = list_files_from_directory(directory)
+                
+                if not file_list:
+                    return jsonify({"error": "No files found in the uploaded ZIP"}), 400
+
+                analysis_results = analyze_files(directory, file_list)
+
+                return jsonify({"files": file_list, "analysis": analysis_results}), 200
+
         else:
-            return jsonify({"error": "Request is not JSON"}), 400
+            return jsonify({"error": "Invalid request format"}), 400
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

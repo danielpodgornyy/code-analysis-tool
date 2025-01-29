@@ -7,11 +7,22 @@
     type="text"
     placeholder="Enter repository URL"
   />
-  <button (click)="analyze()">Analyze</button>
+  <button (click)="analyzeGitRepo()">Analyze</button>
+  
+  <hr />
+
+  <label for="fileUpload">Upload Local Repository (.zip):</label>
+  <input id="fileUpload" type="file" (change)="onFileSelected($event)" accept=".zip" />
+  <button (click)="uploadLocalRepo()">Upload and Analyze</button>
+
+  <hr />
+
 
   <div *ngIf="output" class="output-container">
     <h2>Analysis Results:</h2>
     <pre class="analysis-results">{{ output }}</pre>
+    <!-- <pre *ngIf="output.files">Files: {{ output.files | json }}</pre>
+    <pre *ngIf="output.analysis">Analysis: {{ output.analysis | json }}</pre> -->
   </div>
 
   <div *ngIf="!output">

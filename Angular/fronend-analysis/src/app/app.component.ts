@@ -16,11 +16,12 @@ export class AppComponent {
   repoPath = '';
   output = '';
   analysisResults: any = {};  // Store analysis results for display
+  selectedFile: File | null = null;  
 
 
   constructor(private http: HttpClient) {}
 
-  analyze() {
+  analyzeGitRepo() {
     if (this.repoUrl.trim() === '') {
       alert('Please enter a valid repository URL.');
       return;
@@ -28,7 +29,7 @@ export class AppComponent {
 
     const requestBody = { repo_url: this.repoUrl };  // Ensure repo_url is correctly passed
 
-    this.http.post<AnalysisResponse>('http://127.0.0.1:5000/run-analyzer', requestBody)
+    this.http.post<AnalysisResponse>('https://code-analysis-tool-7jn9.onrender.com/run-analyzer', requestBody)
       .pipe(
         catchError(error => {
           console.error('Error:', error);
@@ -52,10 +53,45 @@ export class AppComponent {
       );
   }
 
+  /** Handle file selection */
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  /** Upload local `.zip` file for analysis */
+  uploadLocalRepo() {
+    if (!this.selectedFile) {
+      alert('Please select a ZIP file to upload.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.http.post<AnalysisResponse>('https://code-analysis-tool-7jn9.onrender.com/run-analyzer', formData)
+      .pipe(
+        catchError(error => {
+          console.error('Error:', error);
+          return throwError(error);
+        })
+      )
+      .subscribe(
+        response => {
+          console.log('Analysis response:', response);
+          this.analysisResults = response.analysis;
+          this.output = this.constructOutput(response.files, this.analysisResults);
+        },
+        error => {
+          console.error('Request failed:', error);
+          this.output = 'An error occurred while analyzing the uploaded ZIP file.';
+        }
+      );
+  }
+
+  /** Format analysis results for display */
   constructOutput(files: string[], analysis: any): string {
     let resultOutput = '';
 
-    // Check if there are any files to analyze
     if (files.length === 0) {
       resultOutput += 'No files found in the repository.\n';
     } else {
@@ -64,7 +100,6 @@ export class AppComponent {
         resultOutput += `\n- ${file}`;
       });
 
-      // Analyze each file's issues
       resultOutput += '\n\nAnalysis Results:\n';
       Object.keys(analysis).forEach(file => {
         const fileIssues = analysis[file];
