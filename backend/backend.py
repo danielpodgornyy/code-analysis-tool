@@ -8,7 +8,13 @@ from criteria.line_length import LineLengthCriterion
 from config import CRITERIA
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:4200"])
+CORS(app, origins=[
+    "http://localhost:4200",
+    "https://codeanalysis-42512.web.app",
+    "https://codeanalysis-42512.firebaseapp.com",
+    "https://code-analysis-a27ff.web.app",
+    "https://code-analysis-a27ff.firebaseapp.com"
+])
 
 def list_files_from_directory(directory):
     """List all files in a directory, excluding hidden ones."""
