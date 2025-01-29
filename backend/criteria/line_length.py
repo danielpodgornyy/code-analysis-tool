@@ -6,8 +6,19 @@ class LineLengthCriterion(BaseCriterion):
 
     def analyze(self, file_path):
         issues = []
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for i, line in enumerate(file, start=1):
-                if len(line.rstrip()) > self.max_length:
-                    issues.append(f"Line {i}: Exceeds {self.max_length} characters")
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                for i, line in enumerate(file, start=1):
+                    if len(line.rstrip()) > self.max_length:
+                        issues.append(f"Line {i}: Exceeds {self.max_length} characters")
+        except UnicodeDecodeError:
+            try:
+                with open(file_path, 'r', encoding='latin1') as file:
+                    for i, line in enumerate(file, start=1):
+                        if len(line.rstrip()) > self.max_length:
+                           issues.append(f"Line {i}: Exceeds {self.max_length} characters")
+            except Exception as e: # Catch other potential errors
+                issues.append(f"Error processing {file_path}: {e}")
+        except FileNotFoundError: # Catch the case where the file isn't found.
+            issues.append(f"File not found: {file_path}")
         return issues

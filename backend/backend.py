@@ -21,6 +21,7 @@ def list_files_from_directory(directory):
                 file_list.append(relative_path)
     return file_list
 
+# Error: "An error occurred while extracting the ZIP file: expected str, bytes or os.PathLike object, not TextIOWrapper"
 def analyze_files(directory, file_list):
     """Analyze each file against enabled criteria."""
     results = {}
@@ -31,7 +32,7 @@ def analyze_files(directory, file_list):
             if criterion_config["enabled"]:
                 if criterion_name == "line_length":
                     checker = LineLengthCriterion(criterion_config["max_length"])
-                    results[file_path][criterion_name] = checker.analyze(absolute_path)
+                    results[file_path][criterion_name] = checker.analyze(absolute_path) # Pass the path
     return results
 
 @app.route("/run-analyzer", methods=["POST"])
@@ -68,6 +69,7 @@ def run_analyzer():
                 except exc.GitCommandError as e:
                     return jsonify({"error": f"Failed to clone repository: {e.stderr.strip()}"}), 500
 
+        # Error: "An error occurred while extracting the ZIP file: expected str, bytes or os.PathLike object, not TextIOWrapper"
         elif 'file' in request.files:
             uploaded_file = request.files['file']
 
@@ -78,18 +80,23 @@ def run_analyzer():
                 zip_path = os.path.join(temp_dir, uploaded_file.filename)
                 uploaded_file.save(zip_path)
 
-                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
+                try:
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        zip_ref.extractall(temp_dir)
 
-                directory = temp_dir
-                file_list = list_files_from_directory(directory)
-                
-                if not file_list:
-                    return jsonify({"error": "No files found in the uploaded ZIP"}), 400
+                    # After extracting, check if all files inside are properly encoded
+                    file_list = list_files_from_directory(temp_dir)
+                    if not file_list:
+                        return jsonify({"error": "No files found in the uploaded ZIP."}), 400
 
-                analysis_results = analyze_files(directory, file_list)
+                    analysis_results = analyze_files(temp_dir, file_list)
 
-                return jsonify({"files": file_list, "analysis": analysis_results}), 200
+                    return jsonify({"files": file_list, "analysis": analysis_results}), 200
+
+                except zipfile.BadZipFile:
+                    return jsonify({"error": "The uploaded file is not a valid ZIP file."}), 400
+                except Exception as e:
+                    return jsonify({"error": f"An error occurred while extracting the ZIP file: {str(e)}"}), 500
 
         else:
             return jsonify({"error": "Invalid request format"}), 400
