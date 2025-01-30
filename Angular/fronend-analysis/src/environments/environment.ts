@@ -1,10 +1,10 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyBy9ohipSmrQvI_7QRJvxKHi0Uy0wtWz00",
-    authDomain: "code-analysis-a27ff.firebaseapp.com",
-    projectId: "code-analysis-a27ff",
-    storageBucket: "code-analysis-a27ff.firebasestorage.app",
-    messagingSenderId: "1020108267358",
-    appId: "1:1020108267358:web:e1f017673c4be2e64939cf"
+    apiKey: "NG_APP_FIREBASE_API_KEY",
+    authDomain: "NG_APP_AUTH_DOMAIN",
+    projectId: "NG_APP_PROJECT_ID",
+    storageBucket: "NG_APP_STORAGE_BUCKET",
+    messagingSenderId: "NG_APP_MESSAGING_SENDER_ID",
+    appId: "NG_APP_APP_ID"
 };
 
 export const environment = {
