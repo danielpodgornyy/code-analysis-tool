@@ -11,6 +11,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 
+import { environment } from '../environments/environment'; // Import environment
 
 @NgModule({
   declarations: [
@@ -24,7 +25,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
   ],
   providers: [
     provideClientHydration(withEventReplay()),
-    provideFirebaseApp(() => initializeApp({ projectId: "code-analysis-a27ff", appId: "1:1020108267358:web:e1f017673c4be2e64939cf", storageBucket: "code-analysis-a27ff.firebasestorage.app", apiKey: "AIzaSyBy9ohipSmrQvI_7QRJvxKHi0Uy0wtWz00", authDomain: "code-analysis-a27ff.firebaseapp.com", messagingSenderId: "1020108267358" })),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage())
