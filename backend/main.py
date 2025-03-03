@@ -40,19 +40,19 @@ def analyze_files(directory, file_list):
     for file_path in file_list:
         absolute_path = os.path.join(directory, file_path)
         results[file_path] = {}
-        
+
         for criterion_name, criterion_config in CRITERIA.items():
             if criterion_config["enabled"]:
                 if criterion_name == "line_length":
                     checker = LineLengthCriterion(criterion_config["max_length"])
                     results[file_path][criterion_name] = checker.analyze(absolute_path)  # Pass the path
-                
+
                 elif criterion_name == "class_extraction":
                     extractor = ClassExtractor()
                     results[file_path][criterion_name] = extractor.analyze(absolute_path)  # Pass the path
-        
+
         results[file_path]["summary"] = {key: val for key, val in results[file_path].items()}
-        
+
     return results
 
 

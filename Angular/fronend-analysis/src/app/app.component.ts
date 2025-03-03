@@ -11,25 +11,26 @@ import { throwError } from 'rxjs';
 })
 
 export class AppComponent {
-  title = 'Code Analysis Tool';
+  title: string = 'Code Analysis Tool'; 
   repoUrl: string = '';  // Bind to input field in the template
-  repoPath = '';
-  output = '';
-  analysisResults: any = {};  // Store analysis results for display
+  repoPath: string = '';
+  output: string = '';
   selectedFile: File | null = null;  
 
 
   constructor(private http: HttpClient) {}
 
-  analyzeGitRepo() {
+  handleAnalyzeGitRepo() {
     if (this.repoUrl.trim() === '') {
       alert('Please enter a valid repository URL.');
       return;
     }
 
-    const requestBody = { repo_url: this.repoUrl };  // Ensure repo_url is correctly passed
 
+    // Pull the analysis response from the backend
+    const requestBody = { repo_url: this.repoUrl };
     this.http.post<AnalysisResponse>('http://127.0.0.1:5000/run-analyzer', requestBody)
+    // Not sure what the pipe is for
       .pipe(
         catchError(error => {
           console.error('Error:', error);
@@ -40,10 +41,9 @@ export class AppComponent {
         response => {
           console.log('Analysis response:', response);
           // Handle the response, display results in the UI
-          this.analysisResults = response.analysis;
 
           // Construct a user-friendly output
-          this.output = this.constructOutput(response.files, this.analysisResults);
+          this.output = this.constructOutput(response.files, response.analysis);
         },
         error => {
           console.error('Request failed:', error);
@@ -79,7 +79,7 @@ export class AppComponent {
         response => {
           console.log('Analysis response:', response);
           this.analysisResults = response.analysis;
-          this.output = this.constructOutput(response.files, this.analysisResults);
+          this.output = this.constructOutput(response.files, response.analysis);
         },
         error => {
           console.error('Request failed:', error);
@@ -89,39 +89,46 @@ export class AppComponent {
   }
 
   /** Format analysis results for display */
+  // THIS WILL BE CHANGED ONCE FRONTEND IS REHASHED
   constructOutput(files: string[], analysis: any): string {
     let resultOutput = '';
 
+    // Lists out the files within the repo
     if (files.length === 0) {
-      resultOutput += 'No files found in the repository.\n';
-    } else {
+      return 'No files found in the repository.\n'; // Automatically return since there's no work to be done 
+    } else { 
       resultOutput += `Files found in the repository:\n`;
       files.forEach(file => {
         resultOutput += `\n- ${file}`;
       });
+    }
 
-      resultOutput += '\n\nAnalysis Results:\n';
-      Object.keys(analysis).forEach(file => {
-        const fileIssues = analysis[file];
-        resultOutput += `\n${file}:\n`;
+    resultOutput += '\n\nAnalysis Results:\n';
 
-        let healthy = true;
-        Object.keys(fileIssues).forEach(criterion => {
-          const violations = fileIssues[criterion];
-          if (violations.length > 0) {
-            healthy = false;
-            resultOutput += `${criterion.charAt(0).toUpperCase() + criterion.slice(1)} Violations:\n`;
-            violations.forEach((violation: any) => {
-              resultOutput += `- ${violation}\n`;
-            });
-          }
-        });
+    // Iterates over every file name returned, 
+    Object.keys(analysis).forEach(file => {
+      const fileIssues = analysis[file]; 
+      let healthy = true; // Keeps track of the health of each class
 
-        if (healthy) {
-          resultOutput += `No issues found. File is healthy.\n`;
+      resultOutput += `\n${file}:\n`; // File name
+      Object.keys(fileIssues).forEach(criterion => {
+        const violations = fileIssues[criterion];
+
+        if (violations.length > 0) {
+          healthy = false;
+
+          resultOutput += `${criterion.charAt(0).toUpperCase() + criterion.slice(1)} Violations:\n`; //
+          violations.forEach((violation: any) => {
+            resultOutput += `- ${violation}\n`;
+          });
         }
       });
-    }
+
+      // If no criterion is marked, then it is healthy
+      if (healthy) {
+          resultOutput += `No issues found. File is healthy.\n`;
+      }
+    });
 
     return resultOutput;
   }
