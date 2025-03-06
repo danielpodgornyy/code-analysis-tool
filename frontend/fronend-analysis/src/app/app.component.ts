@@ -17,7 +17,6 @@ export class AppComponent {
   output: string = '';
   selectedFile: File | null = null;  
 
-
   constructor(private http: HttpClient) {}
 
   handleAnalyzeGitRepo() {
@@ -25,7 +24,6 @@ export class AppComponent {
       alert('Please enter a valid repository URL.');
       return;
     }
-
 
     // Pull the analysis response from the backend
     const requestBody = { repo_url: this.repoUrl };
@@ -78,7 +76,6 @@ export class AppComponent {
       .subscribe(
         response => {
           console.log('Analysis response:', response);
-          this.analysisResults = response.analysis;
           this.output = this.constructOutput(response.files, response.analysis);
         },
         error => {
