@@ -11,6 +11,9 @@ import { throwError } from 'rxjs';
 })
 
 export class AppComponent {
+  
+  analysisResults: any; // Sam: Trying to run program, but kept giving error that this was not defined.
+  
   title: string = 'Code Analysis Tool'; 
   repoUrl: string = '';  // Bind to input field in the template
   repoPath: string = '';
