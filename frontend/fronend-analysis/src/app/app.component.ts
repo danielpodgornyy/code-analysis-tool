@@ -44,7 +44,7 @@ export class AppComponent {
           // Handle the response, display results in the UI
 
           // Construct a user-friendly output
-          this.output = this.constructOutput(response.files, response.analysis);
+          this.output = this.constructOutput(response.project_grades);
         },
         error => {
           console.error('Request failed:', error);
@@ -79,7 +79,7 @@ export class AppComponent {
       .subscribe(
         response => {
           console.log('Analysis response:', response);
-          this.output = this.constructOutput(response.files, response.analysis);
+          this.output = this.constructOutput(response.project_grades);
         },
         error => {
           console.error('Request failed:', error);
@@ -90,45 +90,15 @@ export class AppComponent {
 
   /** Format analysis results for display */
   // THIS WILL BE CHANGED ONCE FRONTEND IS REHASHED
-  constructOutput(files: string[], analysis: any): string {
+  constructOutput(projectGrades: any): string {
     let resultOutput = '';
-
-    // Lists out the files within the repo
-    if (files.length === 0) {
-      return 'No files found in the repository.\n'; // Automatically return since there's no work to be done 
-    } else { 
-      resultOutput += `Files found in the repository:\n`;
-      files.forEach(file => {
-        resultOutput += `\n- ${file}`;
-      });
-    }
 
     resultOutput += '\n\nAnalysis Results:\n';
 
-    // Iterates over every file name returned, 
-    Object.keys(analysis).forEach(file => {
-      const fileIssues = analysis[file]; 
-      let healthy = true; // Keeps track of the health of each class
-
-      resultOutput += `\n${file}:\n`; // File name
-      Object.keys(fileIssues).forEach(criterion => {
-        const violations = fileIssues[criterion];
-
-        if (violations.length > 0) {
-          healthy = false;
-
-          resultOutput += `${criterion.charAt(0).toUpperCase() + criterion.slice(1)} Violations:\n`; //
-          violations.forEach((violation: any) => {
-            resultOutput += `- ${violation}\n`;
-          });
-        }
-      });
-
-      // If no criterion is marked, then it is healthy
-      if (healthy) {
-          resultOutput += `No issues found. File is healthy.\n`;
-      }
-    });
+    projectGrades.forEach((file_result: any) => {
+        resultOutput += `\n ${file_result['filename']}`;
+        resultOutput += `\n ${file_result['grade']}`;
+    })
 
     return resultOutput;
   }
@@ -136,6 +106,5 @@ export class AppComponent {
 }
 
 interface AnalysisResponse {
-  files: string[];
-  analysis: { [file: string]: { [criterion: string]: string[] } };  // Analysis result for each file and criterion
+  project_grades: any;
 }

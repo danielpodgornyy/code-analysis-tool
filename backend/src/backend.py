@@ -52,7 +52,7 @@ def run_analyzer():
                     # ProjectAnalyzer handles all intermediate analysis steps
                     analyzer = ProjectAnalyzer(temp_dir)
 
-                    return analyzer.results()
+                    return analyzer.get_project_grades()
                 except exc.GitCommandError as e:
                     return jsonify({"error": f"Failed to clone repository: {e.stderr.strip()}"}), 500
 

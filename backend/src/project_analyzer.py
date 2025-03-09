@@ -1,4 +1,5 @@
 import os
+import re
 from flask import jsonify
 
 from criteria.line_length import LineLengthCriterion
@@ -7,12 +8,15 @@ from config import CRITERIA
 from criteria.class_Extractor import ClassExtractor
 from criteria.function_Extractor import FunctionExtractor
 from criteria.import_Extractor import ImportExtractor
+from function_parser import FunctionParser
+from function_grader import FunctionGrader
 
 class ProjectAnalyzer():
     def __init__(self, directory):
         self.directory = directory
         self.files = None
-        self.analysis= None
+        self.file_analysis = {}
+        self.project_grades = []
 
         self.list_files_from_directory()
         self.analyze_files()
@@ -31,38 +35,46 @@ class ProjectAnalyzer():
 
     def analyze_files(self):
         """Analyze each file against enabled criteria."""
-        results = {}
         for file_path in self.files:
+            # If its not a C file, continue
+            if not re.match("^[\w,\s-]+\.[cC]$", file_path):
+                continue
+
+            # Create the absolute path from the filename and position
             absolute_path = os.path.join(self.directory, file_path)
-            results[file_path] = {}
 
-            for criterion_name, criterion_config in CRITERIA.items():
-                if criterion_config["enabled"]:
-                    if criterion_name == "line_length":
-                        checker = LineLengthCriterion(criterion_config["max_length"])
-                        results[file_path][criterion_name] = checker.analyze(absolute_path)  # Pass the path
+            # The parser takes in the file path and outputs a list of objects containing the function name and body
+            parser = FunctionParser(absolute_path)
+            functions = parser.get_functions()
 
-                    elif criterion_name == "class_extraction":
-                        extractor = ClassExtractor()
-                        results[file_path][criterion_name] = extractor.analyze(absolute_path)  # Pass the path
-
-                    elif criterion_name == "function_extraction":
-                        extractor = FunctionExtractor()
-                        results[file_path][criterion_name] = extractor.analyze(absolute_path)  # Pass the path
-
-                    elif criterion_name == "import_extraction":
-                        extractor = ImportExtractor()
-                        results[file_path][criterion_name] = extractor.analyze(absolute_path)  # Pass the path
+            # Using the result from the parser, we check the function criteria
+            function_grader = FunctionGrader(functions)
+            failed_criteria = function_grader.get_failed_criteria()
+            file_grade = function_grader.calculate_file_grade(parser.get_file_length())
 
 
-            results[file_path]["summary"] = {key: val for key, val in results[file_path].items()}
+            # Object to send to overall view of project
+            self.project_grades.append({
+                'filename': file_path,
+                'grade': file_grade
+                })
 
-        self.analysis = results
+            # Object to send to individual project analysis
+            self.file_analysis[file_path] = {
+                    'grade': file_grade,
+                    'failed_criteria': failed_criteria
+                    }
 
-    def results(self):
-        if not self.files:
-            return jsonify({"error": "No files found in repository"}), 400
-        elif not self.analysis:
-            return jsonify({"error": "Could not analyze repository"}), 400
 
-        return jsonify({"files": self.files, "analysis": self.analysis}), 200
+    def get_file_results(self, filename):
+        if self.file_analysis:
+            return jsonify(self.file_analysis[filename]), 200
+        else:
+            return jsonify({'error': 'An error has occured producing the files analysis'}), 500
+
+    def get_project_grades(self):
+        if self.project_grades:
+            print(self.project_grades)
+            return jsonify({'project_grades': self.project_grades}), 200
+        else:
+            return jsonify({'error': 'An error has occured producing the project grades'}), 500
