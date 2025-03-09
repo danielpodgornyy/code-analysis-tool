@@ -14,3 +14,6 @@ If not using a virtual environment:
 
 - To test, use the git repo:
 ``` https://github.com/rtyley/small-test-repo ```
+
+To run backend using flask:
+``` flask --app backend run ```
