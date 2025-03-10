@@ -1,0 +1,1 @@
+- Decouple project_analyzer by moving the json sending from the analyzer to the app

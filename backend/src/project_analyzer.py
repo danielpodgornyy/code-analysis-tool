@@ -13,6 +13,9 @@ from function_grader import FunctionGrader
 
 class ProjectAnalyzer():
     def __init__(self, directory):
+        if not isinstance(directory, str):
+            raise TypeError(f"Expected string for temp_dir path")
+
         self.directory = directory
         self.files = None
         self.file_analysis = {}
@@ -77,4 +80,4 @@ class ProjectAnalyzer():
             print(self.project_grades)
             return jsonify({'project_grades': self.project_grades}), 200
         else:
-            return jsonify({'error': 'An error has occured producing the project grades'}), 500
+            return jsonify({'error': 'There are no files to grade'}), 500
