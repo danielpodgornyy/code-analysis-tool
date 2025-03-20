@@ -8,9 +8,11 @@ class FunctionGrader():
 
         self.failed_criteria = [] # Keys are the failed criteria and the results are an object of the message and criteria
 
-        raw_penalties = self.check_criteria()
+        self.check_criteria()
 
     def check_criteria(self):
+        """Iterates through each function within a file to collect the amount of penalties the file has accumulated per function"""
+
         for function in self.functions:
             function_body_text = ''
             # Add the lines to the function body
@@ -23,6 +25,15 @@ class FunctionGrader():
                 self.failed_criteria.append({
                         'criteria': 'FUNCTIONTOOSHORT',
                         'message': f"The function {function['name']} appears to be a bit short. While this doesn't necessarily indicate an error, it could warrant just removing the function and replacing the call with the code itself.",
+                        'code': function['body']
+                        })
+
+            # CRITERIA: IF THE FUNCTION IS TOO LONG, SPLIT IT UP INTO SMALLER FUNCTIONS
+            if len(function['body']) >= 110:
+                self.penalties += 3
+                self.failed_criteria.append({
+                        'criteria': 'FUNCTIONTOOLONG',
+                        'message': f"The function {function['name']} appears to be a too long. While this doesn't necessarily indicate an error, it could mean that the function is handling too many tasks. It is generally considered best practice to split the function up into smaller functions that are called within the same function to improve readability.",
                         'code': function['body']
                         })
 
@@ -39,12 +50,12 @@ class FunctionGrader():
     def calculate_cyclomatic_complexity(self, func_body):
         return func_body.count('if') + func_body.count('for') + func_body.count('while')
 
-
-
     def get_failed_criteria(self):
         return self.failed_criteria
 
     def calculate_file_grade(self, file_length):
+        """Grades the individual file based on the penalties scaled by the size of the file"""
+
         # Find scaling factor
         scaling_factor = math.log(file_length + 1)
 
@@ -53,9 +64,3 @@ class FunctionGrader():
 
         # Calculate final grade
         return max(0, round(100 - scaled_penalties, 2))
-
-
-
-
-
-

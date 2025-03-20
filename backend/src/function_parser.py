@@ -9,8 +9,7 @@ class FunctionParser():
 
     def parse(self, file_path):
         with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-        self.lines = lines
+            self.lines = file.readlines()
 
         self.extract_function_bodies()
 

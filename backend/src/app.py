@@ -42,7 +42,12 @@ def run_analyzer():
                     # ProjectAnalyzer handles all intermediate analysis steps
                     analyzer = ProjectAnalyzer(temp_dir)
 
-                    return analyzer.get_project_grades()
+                    # Pull the grade list from the project and return it
+                    grades = analyzer.get_project_grades()
+
+                    if grades:
+                        return jsonify(grades), 200
+                    return jsonify({'error': 'There are no files to grade'}), 500
                 except exc.GitCommandError as e:
                     return jsonify({"error": f"Failed to clone repository: {e.stderr.strip()}"}), 500
 
@@ -63,11 +68,15 @@ def run_analyzer():
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall(temp_dir)
 
-
                     # ProjectAnalyzer handles all intermediate analysis steps
                     analyzer = ProjectAnalyzer(temp_dir)
 
-                    return analyzer.get_project_grades()
+                    # Pull the grade list from the project and return it
+                    grades = analyzer.get_project_grades()
+
+                    if grades:
+                        return jsonify(grades), 200
+                    return jsonify({'error': 'There are no files to grade'}), 500
                 except zipfile.BadZipFile:
                     return jsonify({"error": "The uploaded file is not a valid ZIP file."}), 400
                 except Exception as e:
@@ -78,7 +87,6 @@ def run_analyzer():
             return jsonify({"error": "Invalid request format"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)

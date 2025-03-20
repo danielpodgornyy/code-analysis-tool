@@ -55,7 +55,6 @@ class ProjectAnalyzer():
             failed_criteria = function_grader.get_failed_criteria()
             file_grade = function_grader.calculate_file_grade(parser.get_file_length())
 
-
             # Object to send to overall view of project
             self.project_grades.append({
                 'filename': file_path,
@@ -70,14 +69,7 @@ class ProjectAnalyzer():
 
 
     def get_file_results(self, filename):
-        if self.file_analysis:
-            return jsonify(self.file_analysis[filename]), 200
-        else:
-            return jsonify({'error': 'An error has occured producing the files analysis'}), 500
+        return self.file_analysis[filename] if self.file_analysis else None
 
     def get_project_grades(self):
-        if self.project_grades:
-            print(self.project_grades)
-            return jsonify({'project_grades': self.project_grades}), 200
-        else:
-            return jsonify({'error': 'There are no files to grade'}), 500
+        return {'project_grades': self.project_grades} if self.project_grades else None
