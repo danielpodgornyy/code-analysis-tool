@@ -14,8 +14,8 @@ class FunctionGrader():
         """Iterates through each function within a file to collect the amount of penalties the file has accumulated per function"""
 
         for function in self.functions:
+            # Add the lines to the function body (make is a string)
             function_body_text = ''
-            # Add the lines to the function body
             for line in function['body']:
                 function_body_text += line
 
@@ -37,9 +37,19 @@ class FunctionGrader():
                         'code': function['body']
                         })
 
+            # CRITERIA: IF THERE ARE TOO MANY PARAMS, GROUP PARAMS TOGETHER OR REFACTOR FUNCTION
+            if len(function['params']) >= 6:
+                self.penalties += 4
+                self.failed_criteria.append({
+                        'criteria': 'TOOMANYPARAMS',
+                        'message': f"The function {function['name']} appears to have too many parameters. This could be an indication that the function handles too many tasks and in general it's hard to read and keep track of parameters if the amount becomes overbearing. The best course of action would be to either group together parameters using structs or any other data structure OR refactor the function as it could be handling too many tasks.",
+                        'code': function['body']
+                        })
+
+
             # CRITERIA: IF THE CYCLOMATIC COMPLEXITY IS HIGH, IT SHOULD WARRANT A REFACTOR
             if self.calculate_cyclomatic_complexity(function_body_text) >= 10:
-                self.penalties += 3
+                self.penalties += 5
                 self.failed_criteria.append({
                         'criteria': 'FUNCTIONTOOCOMPLEX',
                         'message': f"The function {function['name']} has a high cyclomatic complexity. This means that it has many paths that it goes down which can be difficult to follow. The code should be either seperated into functions or other structures or logic should be used instead",

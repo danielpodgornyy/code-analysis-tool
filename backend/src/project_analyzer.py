@@ -2,12 +2,6 @@ import os
 import re
 from flask import jsonify
 
-from criteria.line_length import LineLengthCriterion
-from config import CRITERIA
-
-from criteria.class_Extractor import ClassExtractor
-from criteria.function_Extractor import FunctionExtractor
-from criteria.import_Extractor import ImportExtractor
 from function_parser import FunctionParser
 from function_grader import FunctionGrader
 
@@ -66,7 +60,6 @@ class ProjectAnalyzer():
                     'grade': file_grade,
                     'failed_criteria': failed_criteria
                     }
-
 
     def get_file_results(self, filename):
         return self.file_analysis[filename] if self.file_analysis else None
