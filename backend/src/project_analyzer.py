@@ -2,8 +2,8 @@ import os
 import re
 from flask import jsonify
 
-from function_parser import FunctionParser
-from function_grader import FunctionGrader
+from src.function_parser import FunctionParser
+from src.function_grader import FunctionGrader
 
 class ProjectAnalyzer():
     def __init__(self, directory):

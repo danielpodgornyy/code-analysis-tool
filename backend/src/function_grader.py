@@ -46,7 +46,6 @@ class FunctionGrader():
                         'code': function['body']
                         })
 
-
             # CRITERIA: IF THE CYCLOMATIC COMPLEXITY IS HIGH, IT SHOULD WARRANT A REFACTOR
             if self.calculate_cyclomatic_complexity(function_body_text) >= 10:
                 self.penalties += 5

@@ -60,7 +60,7 @@ class FunctionParser():
                 current_function_name = None
 
     def parse_params(self, func_signature):
-        param_string = func_signature.split('(', 1)[-1].split(')', 1)[0]
+        param_string = func_signature.split('(', 1)[-1].split(')', 1)[0] # Removes everything to the left and right of the items in the parenthesis
         param_list = param_string.split(', ')
         return param_list
 
