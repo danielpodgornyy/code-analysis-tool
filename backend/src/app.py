@@ -16,6 +16,9 @@ CORS(app, origins=[
     "https://code-analysis-a27ff.firebaseapp.com"
 ])
 
+# Analyzer which saves information between calls
+analyzer = ProjectAnalyzer()
+
 @app.route("/run-analyzer", methods=["POST"])
 def run_analyzer():
     """Handles the preliminary checks on the input data, creates a temporary directory, clones the data from the repo or zip and passes off the directory to the project analyzer, then it takes the result and gives it to the client"""
@@ -40,7 +43,7 @@ def run_analyzer():
                         return jsonify({"error": "The repository is bare or invalid."}), 400
 
                     # ProjectAnalyzer handles all intermediate analysis steps
-                    analyzer = ProjectAnalyzer(temp_dir)
+                    analyzer.analyze_directory(temp_dir)
 
                     # Pull the grade list from the project and return it
                     grades = analyzer.get_project_grades()
@@ -69,7 +72,7 @@ def run_analyzer():
                         zip_ref.extractall(temp_dir)
 
                     # ProjectAnalyzer handles all intermediate analysis steps
-                    analyzer = ProjectAnalyzer(temp_dir)
+                    analyzer.analyze_directory(temp_dir)
 
                     # Pull the grade list from the project and return it
                     grades = analyzer.get_project_grades()
@@ -87,6 +90,19 @@ def run_analyzer():
             return jsonify({"error": "Invalid request format"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/get-file-results", methods=["GET"])
+def get_file_results():
+    filename = request.args.get('filename')
+    if not filename:
+        return jsonify({'error': 'Please include a file name'}), 400
+
+    results = analyzer.get_file_results(filename)
+
+    if not results:
+        return jsonify({'error': 'File results do not exist'}), 404
+
+    return jsonify(results), 200
 
 if __name__ == "__main__":
     app.run(debug=True)

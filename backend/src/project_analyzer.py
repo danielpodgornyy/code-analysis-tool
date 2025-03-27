@@ -6,14 +6,23 @@ from src.function_parser import FunctionParser
 from src.function_grader import FunctionGrader
 
 class ProjectAnalyzer():
-    def __init__(self, directory):
+    def __init__(self):
+        self.directory = None
+        self.files = []
+        self.file_analysis = {}
+        self.project_grades = []
+
+
+    def analyze_directory(self, directory):
         if not isinstance(directory, str):
             raise TypeError(f"Expected string for temp_dir path")
 
-        self.directory = directory
-        self.files = None
+        # Reset info
+        self.files = []
         self.file_analysis = {}
         self.project_grades = []
+
+        self.directory = directory
 
         self.list_files_from_directory()
         self.analyze_files()
@@ -62,7 +71,11 @@ class ProjectAnalyzer():
                     }
 
     def get_file_results(self, filename):
-        return self.file_analysis[filename] if self.file_analysis else None
+        if filename not in self.files:
+            return None
+
+        return self.file_analysis.get(filename) if self.file_analysis else None
+
 
     def get_project_grades(self):
         return {'project_grades': self.project_grades} if self.project_grades else None
