@@ -18,6 +18,7 @@ export class AppComponent {
   repoUrl: string = '';  // Bind to input field in the template
   repoPath: string = '';
   output: string = '';
+  projectGrades: any[] = []; // New property to store grades
   selectedFile: File | null = null;  
 
   constructor(private http: HttpClient) {}
@@ -41,14 +42,11 @@ export class AppComponent {
       .subscribe(
         response => {
           console.log('Analysis response:', response);
-          // Handle the response, display results in the UI
-
-          // Construct a user-friendly output
-          this.output = this.constructOutput(response.project_grades);
+          this.projectGrades = response.project_grades;
+          this.output = this.constructOutput(this.projectGrades);
         },
         error => {
           console.error('Request failed:', error);
-          // Handle the error appropriately, show error message in the UI
           this.output = 'An error occurred while fetching the analysis results.';
         }
       );
@@ -79,7 +77,8 @@ export class AppComponent {
       .subscribe(
         response => {
           console.log('Analysis response:', response);
-          this.output = this.constructOutput(response.project_grades);
+          this.projectGrades = response.project_grades;
+          this.output = this.constructOutput(this.projectGrades);
         },
         error => {
           console.error('Request failed:', error);
@@ -90,19 +89,50 @@ export class AppComponent {
 
   /** Format analysis results for display */
   // THIS WILL BE CHANGED ONCE FRONTEND IS REHASHED
-  constructOutput(projectGrades: any): string {
-    let resultOutput = '';
-
-    resultOutput += '\n\nAnalysis Results:\n';
-
-    projectGrades.forEach((file_result: any) => {
-        resultOutput += `\n ${file_result['filename']}`;
-        resultOutput += `\n ${file_result['grade']}`;
-    })
-
-    return resultOutput;
+  constructOutput(projectGrades: any[]): string {
+    return projectGrades.map(file => 
+      `${file.filename}: ${file.grade}`
+    ).join('\n');
   }
 
+  // ADD THESE TWO METHODS HERE ↓
+  getGradeColor(grade: any): string {
+    // Convert grade to a string if it's not already
+    const gradeString = typeof grade === 'string' 
+      ? grade 
+      : (grade?.toString() || '0');
+    
+    // Remove any non-numeric characters and convert to number
+    const numericGrade = parseFloat(gradeString.replace(/[^\d.]/g, ''));
+    
+    // Handle cases where parsing fails
+    if (isNaN(numericGrade)) {
+      return '#ef4444'; // default to red for invalid grades
+    }
+  
+    if (numericGrade >= 90) return '#10b981'; // green
+    if (numericGrade >= 80) return '#84cc16'; // lime
+    if (numericGrade >= 70) return '#eab308'; // yellow
+    if (numericGrade >= 60) return '#f97316'; // orange
+    return '#ef4444'; // red
+  }
+  
+  calculateDashArray(grade: any): string {
+    // Convert grade to a string if it's not already
+    const gradeString = typeof grade === 'string' 
+      ? grade 
+      : (grade?.toString() || '0');
+    
+    // Remove any non-numeric characters and convert to number
+    const numericGrade = parseFloat(gradeString.replace(/[^\d.]/g, ''));
+    
+    // Handle cases where parsing fails
+    if (isNaN(numericGrade)) {
+      return '0, 100'; // default to 0% if parsing fails
+    }
+  
+    return `${numericGrade}, 100`;
+  }
 }
 
 interface AnalysisResponse {

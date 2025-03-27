@@ -1,27 +1,27 @@
-.container {
+  .container {
     width: 80%;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
     text-align: center;
   }
-  
+
   h1 {
     color: #4CAF50;
   }
-  
+
   label {
     font-size: 18px;
     margin-right: 10px;
   }
-  
+
   input {
     padding: 8px;
     font-size: 16px;
     margin-right: 10px;
     width: 300px;
   }
-  
+
   button {
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -30,11 +30,61 @@
     cursor: pointer;
     font-size: 16px;
   }
-  
+
   button:hover {
     background-color: #45a049;
   }
-  
+
+  .grade-visualization-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .grade-wheels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .grade-wheel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f4;
+    padding: 15px;
+    border-radius: 8px;
+    width: 200px;
+  }
+
+  .wheel-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+  }
+
+  .grade-circle {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  .grade-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .filename {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+  }
   .output-container {
     margin-top: 20px;
     background-color: #f4f4f4;

@@ -17,18 +17,48 @@
 
   <hr />
 
+  <div *ngIf="projectGrades && projectGrades.length > 0" class="grade-visualization-container">
+    <h2>Analysis Results:</h2>
+    <div class="grade-wheel">
+      <div class="wheel-container">
+        <svg class="grade-circle" viewBox="0 0 36 36">
+          <path
+            d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+            fill="none"
+            stroke="#eee"
+            stroke-width="3"
+          />
+          <path
+            d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+            fill="none"
+            stroke-linecap="round"
+            stroke-width="3"
+            [attr.stroke]="getGradeColor(projectGrades[0].grade)"
+            [attr.stroke-dasharray]="calculateDashArray(projectGrades[0].grade)"
+          />
+        </svg>
+        <div class="grade-percentage">
+          {{ projectGrades[0].grade }}
+        </div>
+        <div class="filename">
+          {{ projectGrades[0].filename }}
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div *ngIf="output" class="output-container">
+  <div *ngIf="output && (!projectGrades || projectGrades.length === 0)" class="output-container">
     <h2>Analysis Results:</h2>
     <pre class="analysis-results">{{ output }}</pre>
-    <!-- <pre *ngIf="output.files">Files: {{ output.files | json }}</pre>
-    <pre *ngIf="output.analysis">Analysis: {{ output.analysis | json }}</pre> -->
   </div>
 
   <div *ngIf="!output">
     <p>No analysis results yet. Please enter a repository URL and click 'Analyze'.</p>
   </div>
 </div>
-
 
 <router-outlet />
