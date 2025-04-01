@@ -11,6 +11,11 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatGridListModule } from '@angular/material/grid-list';
+
+
 import { environment } from '../environments/environment'; // Import environment
 
 @NgModule({
@@ -21,7 +26,10 @@ import { environment } from '../environments/environment'; // Import environment
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatGridListModule,
   ],
   providers: [
     provideClientHydration(withEventReplay()),

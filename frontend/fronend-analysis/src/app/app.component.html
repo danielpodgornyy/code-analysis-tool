@@ -8,57 +8,28 @@
     placeholder="Enter repository URL"
   />
   <button (click)="handleAnalyzeGitRepo()">Analyze</button>
-  
   <hr />
 
   <label for="fileUpload">Upload Local Repository (.zip):</label>
   <input id="fileUpload" type="file" (change)="onFileSelected($event)" accept=".zip" />
   <button (click)="uploadLocalRepo()">Upload and Analyze</button>
-
   <hr />
 
-  <div *ngIf="projectGrades && projectGrades.length > 0" class="grade-visualization-container">
-    <h2>Analysis Results:</h2>
-    <div class="grade-wheel">
-      <div class="wheel-container">
-        <svg class="grade-circle" viewBox="0 0 36 36">
-          <path
-            d="M18 2.0845
-              a 15.9155 15.9155 0 0 1 0 31.831
-              a 15.9155 15.9155 0 0 1 0 -31.831"
-            fill="none"
-            stroke="#eee"
-            stroke-width="3"
-          />
-          <path
-            d="M18 2.0845
-              a 15.9155 15.9155 0 0 1 0 31.831
-              a 15.9155 15.9155 0 0 1 0 -31.831"
-            fill="none"
-            stroke-linecap="round"
-            stroke-width="3"
-            [attr.stroke]="getGradeColor(projectGrades[0].grade)"
-            [attr.stroke-dasharray]="calculateDashArray(projectGrades[0].grade)"
-          />
-        </svg>
-        <div class="grade-percentage">
-          {{ projectGrades[0].grade }}
-        </div>
-        <div class="filename">
-          {{ projectGrades[0].filename }}
-        </div>
-      </div>
+  <!-- Analysis Results/Grades -->
+
+  <div *ngIf="projectGrades.length">
+    <h2>Analysis Results</h2>
+    <div class="grid-container">
+      <mat-card *ngFor="let file of projectGrades; let i = index" (click)="onCardClick(file)">
+        <mat-card-header>
+          <mat-card-title>{{ file.filename }}</mat-card-title>
+          <mat-card-subtitle>Grade: {{ file.grade }}%</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas #chartCanvas></canvas> <!-- Each card gets its own chart -->
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
-
-  <div *ngIf="output && (!projectGrades || projectGrades.length === 0)" class="output-container">
-    <h2>Analysis Results:</h2>
-    <pre class="analysis-results">{{ output }}</pre>
-  </div>
-
-  <div *ngIf="!output">
-    <p>No analysis results yet. Please enter a repository URL and click 'Analyze'.</p>
-  </div>
-</div>
 
 <router-outlet />

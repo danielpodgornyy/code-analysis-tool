@@ -116,5 +116,38 @@
     color: #888;
   }
   
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); // Responsive card layout
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  mat-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    max-width: 450px; // Control card width
+  }
+  
+  mat-card-header {
+    flex: 1; // Make sure the text takes up equal space
+  }
+  
+  mat-card-content {
+    width: 150px; // Ensure chart fits within the card
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
   
   
