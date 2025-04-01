@@ -1,0 +1,76 @@
+.file-details-card {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .chart-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .chart-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .chart-container canvas {
+    max-width: 200px; /* Set a fixed width */
+    max-height: 200px; /* Set a fixed height */
+  }
+
+  .file-details-card {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .file-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .file-info {
+    flex: 1;
+    font-size: 1.2em;
+  }
+  
+  .chart-container {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .chart-container canvas {
+    max-width: 200px;
+    max-height: 200px;
+  }
+  
+  .details-container {
+    margin-top: 20px;
+  }
+  
+  table {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  
