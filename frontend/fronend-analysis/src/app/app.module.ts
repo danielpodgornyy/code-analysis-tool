@@ -16,11 +16,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 
 
-import { environment } from '../environments/environment'; // Import environment
+import { environment } from '../environments/environment';
+import { FileDetailsComponent } from './components/file-details/file-details.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    FileDetailsComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
