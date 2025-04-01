@@ -14,6 +14,9 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 
 import { environment } from '../environments/environment';
@@ -34,6 +37,9 @@ import { HomeComponent } from './components/home/home.component';
     MatCardModule,
     MatButtonModule,
     MatGridListModule,
+    MatIconModule,
+    MatTableModule,
+    MatToolbarModule,
   ],
   providers: [
     provideClientHydration(withEventReplay()),
