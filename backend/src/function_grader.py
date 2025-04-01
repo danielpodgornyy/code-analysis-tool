@@ -1,4 +1,5 @@
 import math
+import re
 
 class FunctionGrader():
     def __init__(self, functions):
@@ -14,6 +15,7 @@ class FunctionGrader():
         """Iterates through each function within a file to collect the amount of penalties the file has accumulated per function"""
 
         for function in self.functions:
+           
             # Add the lines to the function body (make is a string)
             function_body_text = ''
             for line in function['body']:
@@ -27,6 +29,7 @@ class FunctionGrader():
                         'message': f"The function {function['name']} appears to be a bit short. While this doesn't necessarily indicate an error, it could warrant just removing the function and replacing the call with the code itself.",
                         'code': function['body']
                         })
+        
 
             # CRITERIA: IF THE FUNCTION IS TOO LONG, SPLIT IT UP INTO SMALLER FUNCTIONS
             if len(function['body']) >= 110:
@@ -54,17 +57,61 @@ class FunctionGrader():
                         'message': f"The function {function['name']} has a high cyclomatic complexity. This means that it has many paths that it goes down which can be difficult to follow. The code should be either seperated into functions or other structures or logic should be used instead",
                         'code': function['body']
                         })
-
-
+            # CRITERIA: TOO MANY LOCAL VARIABLES
+            if self.count_local_variables(function['body']) > 10:
+                self.penalties += 2
+                self.failed_criteria.append({
+                    'criteria': 'TOOMANYLOCALVARS',
+                    'message': f"The function {function['name']} declares too many local variables. Simplify or refactor.",
+                    'code': function['body']
+                })
+            # CRITERIA: DEEP NESTING
+            if self.get_max_nesting_depth(function['body']) > 3:
+                self.penalties += 3
+                self.failed_criteria.append({
+                    'criteria': 'DEEPNESTING',
+                    'message': f"The function {function['name']} has deeply nested logic. Flatten or restructure.",
+                    'code': function['body']
+                })
+            
+            # CRITERIA: RANDOM NUMBER
+            if self.find_magic_numbers(function['body']) > 3:
+                self.penalties += 2
+                self.failed_criteria.append({
+                    'criteria': 'MAGICNUMBERS',
+                    'message': f"The function {function['name']} uses several magic numbers. Use #define or consts instead.",
+                    'code': function['body']
+                })
+                
     def calculate_cyclomatic_complexity(self, func_body):
         return func_body.count('if') + func_body.count('for') + func_body.count('while')
+    
+    def count_local_variables(self, body_lines):
+        var_decl_pattern = re.compile(r'\b(int|float|double|char|long|short|unsigned|bool)\b\s+\**[a-zA-Z_][a-zA-Z0-9_]*')
+        joined = '\n'.join(body_lines)
+        return len(var_decl_pattern.findall(joined))
+
+    def get_max_nesting_depth(self, body_lines):
+        depth = max_depth = 0
+        for line in body_lines:
+            depth += line.count('{') - line.count('}')
+            max_depth = max(max_depth, depth)
+        return max_depth
+
+    def find_magic_numbers(self, body_lines):
+        magic_number_pattern = re.compile(r'[^#"]\b(?!0|1)\d+\b')  # ignores 0 and 1
+        count = 0
+        for line in body_lines:
+            if not line.strip().startswith('#') and not re.search(r'const\s+', line):
+                count += len(magic_number_pattern.findall(line))
+        return count
 
     def get_failed_criteria(self):
         return self.failed_criteria
 
     def calculate_file_grade(self, file_length):
         """Grades the individual file based on the penalties scaled by the size of the file"""
-
+    
         # Find scaling factor
         scaling_factor = math.log(file_length + 1)
 
@@ -73,3 +120,7 @@ class FunctionGrader():
 
         # Calculate final grade
         return max(0, round(100 - scaled_penalties, 2))
+    
+
+
+
