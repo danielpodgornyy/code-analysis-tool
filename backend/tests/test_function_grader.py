@@ -26,7 +26,7 @@ def test_grader_flags_many_params():
     assert any(f['criteria'] == 'TOOMANYPARAMS' for f in failed)
 
 def test_grader_flags_complex_function():
-    functions = [{'name': 'complex_func', 'params': ['int x'], 'body': ['if(x){}', 'for(int i=0;i<5;i++){}', 'while(x){}']}]
+    functions = [{'name': 'complex_func', 'params': ['int x'], 'body': ['if(x){}', 'for(int i=0;i<5;i++){}', 'while(x){}'] * 5}]
     grader = FunctionGrader(functions)
     failed = grader.get_failed_criteria()
 
