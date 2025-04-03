@@ -2,6 +2,18 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.5.
 
+## Pre-requirements
+
+If the user encounters an error that states that the file is missing chart.js, follow these steps:
+
+```ng add @angular/material``` - adds Angular Material to Angular project. 
+
+```npm install chart.js ``` - installs chart.js module
+
+Finally, run the test server: ```ng serve```
+
+
+
 ## Development server
 
 To start a local development server, run:
