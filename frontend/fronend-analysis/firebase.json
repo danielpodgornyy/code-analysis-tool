@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist\\fronend-analysis\\browser",
+    "public": "dist/fronend-analysis/browser/home",
     "site": "codeanalysis-42512",
     "ignore": [
       "firebase.json",
