@@ -73,4 +73,23 @@
     margin-top: 10px;
   }
   
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Adds space between buttons */
+    margin-top: 20px; /* Adds some space above buttons */
+  }
+  
+  button {
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow to the buttons */
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #1700e1; /* Darker accent for hover effect */
+    color: whitesmoke;
+  }
   
