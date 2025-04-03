@@ -24,7 +24,7 @@ class FunctionParser():
         # temp_func used to keep track of function contents and is used to append to the functions array
         temp_func = {
                 'name': None,
-                'parameters': [],
+                'params': [],
                 'body': []
                 }
         for line in self.lines:
@@ -36,9 +36,12 @@ class FunctionParser():
             func_match = re.search(func_name_pattern, line)
             if func_match:
                 current_function_name = func_match.group(1)
-                temp_func['name'] = current_function_name
-                temp_func['params'] = self.parse_params(func_match.group(0))
-                temp_func['body'] = []
+
+                temp_func = {
+                        'name': current_function_name,
+                        'params': self.parse_params(func_match.group(0)),
+                        'body': []
+                        }
                 bracket_stack.append("{")
                 continue
 
