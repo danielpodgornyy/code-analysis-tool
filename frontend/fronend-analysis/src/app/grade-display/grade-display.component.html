@@ -1,0 +1,29 @@
+<p>grade-display works!</p>
+<div class="wheel-container">
+    <svg class="grade-circle" viewBox="0 0 36 36">
+      <path
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        fill="none"
+        stroke="#eee"
+        stroke-width="3"
+      />
+      <path
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+        fill="none"
+        stroke-linecap="round"
+        stroke-width="3"
+        [attr.stroke]="getGradeColor(grade)"
+        [attr.stroke-dasharray]="calculateDashArray(grade)"
+      />
+    </svg>
+    <div class="grade-percentage">
+      {{ grade }}
+    </div>
+    <div class="filename" *ngIf="filename">
+      {{ filename }}
+    </div>
+  </div>
