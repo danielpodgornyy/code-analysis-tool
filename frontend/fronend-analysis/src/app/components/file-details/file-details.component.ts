@@ -125,7 +125,7 @@ export class FileDetailsComponent implements OnInit, AfterViewInit {
       doc.setFontSize(12);
       doc.text(`Criteria: ${failure.criteria}`, 10, y);
       doc.text(`Message: ${failure.message}`, 10, y + 5);
-      doc.text(`Code Snippet: ${failure.code?.join(' ') || ''}`, 10, y + 10);
+      // doc.text(`Code Snippet: ${failure.code?.join(' ') || ''}`, 10, y + 10);
       
       // Space after each failure item
       y += 20;
